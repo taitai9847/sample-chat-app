@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+  app-db:
+    image: mysql:5.7
+    networks: 
+     - app-network
+    volumes: 
+     - app_db_volume:/var/lib/mysql
+    restart: always
+    environment: 
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: app-db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+
+  server:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    ports: 
+     - "3000:3000"
+    tty: true
+    volumes:
+     - ./server:/app/server
+    networks: 
+     - app-network
+    environment:
+     - NODE_ENV=development
+    working_dir: /app/server
+    command: npm run dev
+    
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports: 
+     - "8080:8080"
+    volumes: 
+     - ./client:/app/client
+    environment:
+     - NODE_ENV=development
+    depends_on: 
+     - server
+    working_dir: /app/client 
+    command: npm run serve
+
+volumes: 
+  app_db_volume:
+
+networks: 
+  app-network:
