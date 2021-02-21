@@ -44,7 +44,6 @@ services:
      - server
     working_dir: /app/client 
     command: npm run serve
-    command: npm run watch
 
 volumes: 
   app_db_volume:
